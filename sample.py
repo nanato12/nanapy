@@ -1,13 +1,22 @@
+import os
+import json
+
+from time import sleep
 from nanapy import Nana
 
-nana = Nana()
+if not os.path.exists('token.json'):
+    token_list = []
+else:
+    token_list = json.load(open('token.json'))
 
-print(nana.profile)
-print(nana.get_user('8419582'))
-nana.follow('8419582')
-print(nana.get_post('051a72fc'))
-print(nana.get_post('85619452', False))
-nana.play('051a72fc')
-nana.applause('051a72fc')
-nana.comment('051a72fc', 'test')
-nana.logout()
+while True:
+    nana = Nana(password='TestAccount1234')
+    # nana = Nana()
+    nana.follow_user('8419582')
+    nana.join_community('996441')
+    for _ in range(30):
+        nana.play_post('051a72fc')
+    nana.applause_post('051a72fc')
+    token_list.append(nana.token)
+    json.dump(token_list, open('token.json', 'w'), indent=4)
+    sleep(10)
