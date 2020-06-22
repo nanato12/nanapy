@@ -18,6 +18,11 @@ class NotFoundPost(Exception):
         not found post
     """
 
+class NotFoundMyData(Exception):
+    """
+        not found my data
+    """
+
 class FollowError(Exception):
     """
         follow account error
