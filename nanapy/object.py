@@ -49,6 +49,38 @@ class User:
 
 class Post:
 
+    post_id = None
+    created_at = None
+    user = None
+    part_id = None
+    caption = None
+    artist = None
+    title = None
+    duration = None
+    sound_url = None
+    is_collabo_waiting = None
+    key = None
+    play_count = None
+    applause_count = None
+    comment_count = None
+    collabo_count = None
+    collabos = None
+    player_url = None
+    private = None
+    single_track_url = None
+    is_mixed = None
+    is_collabo_later = None
+    is_applauded = None
+    is_reposted = None
+    comments = None
+    overdub_count = None
+    genre = None
+    music_key = None
+    acc = None
+    ogp_url = None
+    language = None
+    acc_post = None
+
     def __init__(self, post_data):
         self.__dict__.update(post_data)
 
