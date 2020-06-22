@@ -8,6 +8,7 @@ from .error import (
     SignupError,
     NotFoundUser,
     NotFoundPost,
+    NotFoundMyData,
     FollowError,
     PlayError,
     ApplauseError,
@@ -16,7 +17,6 @@ from .error import (
 
 class Service(Config):
 
-    is_login = False
     email = None
     password = None
     token = None
@@ -24,13 +24,15 @@ class Service(Config):
     appsflyer_id = None
     session = None
 
-    def __init__(self, email, password):
+    def __init__(self, email=None, password=None, token=None):
+        self.initialize_session()
+
         self.email = email
         self.password = password
 
-        self.initialize_session()
-
-        if self.email is not None and self.password is not None:
+        if token:
+            self.set_token(token)
+        elif self.email is not None and self.password is not None:
             self.login()
         else:
             self.create_account()
@@ -56,18 +58,22 @@ class Service(Config):
             json=params
         )
         resource = res.json()
-        if res.status_code == 200:
-            self.is_login = True
-        else:
+        if res.status_code != 200:
             raise LoginError(resource['data']['message'])
-        self.token = resource['data']['token']
-        self.HEADERS['authorization'] = f'token {self.token}'
+        self.set_token(resource['data']['token'])
 
-    def create_account(self):
+    def create_account(self, name=None, email=None, password=None):
+        self.name = name if name else Func.random_string(6)
+        self.email = email if email else f'{self.name}@email.com'
+        self.password = password if password else Func.random_hex(6)
+
         url = self.HOST_DOMAIN + self.LEGACY_VERSION + self.SIGNUP_PATH
         params = {
             'device_id': self.device_id,
-            'screen_name': Func.random_string(6)
+            'screen_name': self.name,
+            'email': self.email,
+            'password': self.password,
+            'type': 'nana'
         }
         res = self.session.post(
             url=url,
@@ -75,11 +81,12 @@ class Service(Config):
             json=params
         )
         resource = res.json()
-        if res.status_code == 200:
-            self.is_login = True
-        else:
+        if res.status_code != 200:
             raise SignupError(resource['data']['message'])
-        self.token = resource['data']['token']
+        self.set_token(resource['data']['token'])
+
+    def set_token(self, token):
+        self.token = token
         self.HEADERS['authorization'] = f'token {self.token}'
 
     def get_my_info(self):
@@ -88,7 +95,10 @@ class Service(Config):
             url=url,
             headers=self.HEADERS
         )
-        return res.json()
+        resource = res.json()
+        if res.status_code != 200:
+            raise NotFoundMyData(resource['data']['message'])
+        return resource
 
     def get_user(self, user_id):
         url = self.HOST_DOMAIN + self.LEGACY_VERSION + \
@@ -97,7 +107,7 @@ class Service(Config):
             url=url,
             headers=self.HEADERS
         )
-        if res.status_code == 404:
+        if res.status_code != 200:
             raise NotFoundUser(f'{user_id} is not found.')
         return res.json()
 
@@ -108,7 +118,7 @@ class Service(Config):
             url=url,
             headers=self.HEADERS
         )
-        if res.status_code == 404:
+        if res.status_code != 200:
             raise NotFoundUser(f'{post_id} is not found.')
         return res.json()
 
@@ -120,10 +130,9 @@ class Service(Config):
             url=url,
             headers=self.HEADERS
         )
-        resource = res.json()
         if res.status_code != 200:
             raise FollowError('failed.')
-        return resource
+        return res.json()
 
     def unfollow_user(self, user_id):
         url = self.HOST_DOMAIN + self.LATEST_VERSION + \
