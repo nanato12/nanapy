@@ -14,6 +14,8 @@ class Config:
     POST_PLAY_PATH = POST_PATH + '/play'
     POST_APPLAUSE_PATH = POST_PATH + '/applause'
     POST_COMMENT_PATH = POST_PATH + '/comments'
+    COMMUNITY_PATH = '/communities/{community_id}'
+    COMMUNITY_JOIN_PATH = COMMUNITY_PATH + '/members'
 
     OS_VERSION = '13.3.1'
     APP_VERSION = '3.10.2'

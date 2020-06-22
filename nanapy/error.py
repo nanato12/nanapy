@@ -18,6 +18,11 @@ class NotFoundPost(Exception):
         not found post
     """
 
+class NotFoundCommunity(Exception):
+    """
+        not found community
+    """
+
 class NotFoundMyData(Exception):
     """
         not found my data
@@ -41,6 +46,16 @@ class ApplauseError(Exception):
 class CommentError(Exception):
     """
         post comment error
+    """
+
+class CommunityJoinError(Exception):
+    """
+        community join error
+    """
+
+class CommunityLeaveError(Exception):
+    """
+        community leave error
     """
 
 class LogoutError(Exception):

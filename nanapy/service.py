@@ -8,11 +8,14 @@ from .error import (
     SignupError,
     NotFoundUser,
     NotFoundPost,
+    NotFoundCommunity,
     NotFoundMyData,
     FollowError,
     PlayError,
     ApplauseError,
-    CommentError
+    CommentError,
+    CommunityJoinError,
+    CommunityLeaveError
 )
 
 class Service(Config):
@@ -35,7 +38,7 @@ class Service(Config):
         elif self.email is not None and self.password is not None:
             self.login()
         else:
-            self.create_account()
+            self.create_account(email=email, password=password)
 
     def initialize_session(self):
         self.session = requests.session()
@@ -122,6 +125,17 @@ class Service(Config):
             raise NotFoundUser(f'{post_id} is not found.')
         return res.json()
 
+    def get_community(self, community_id):
+        url = self.HOST_DOMAIN + self.LEGACY_VERSION + \
+            self.COMMUNITY_PATH.format(community_id=community_id)
+        res = self.session.get(
+            url=url,
+            headers=self.HEADERS
+        )
+        if res.status_code != 200:
+            raise NotFoundCommunity(f'{community_id} is not found.')
+        return res.json()
+
     def follow_user(self, user_id):
         url = self.HOST_DOMAIN + self.LATEST_VERSION + \
             self.USER_FOLLOW_PATH.format(user_id=user_id)
@@ -191,6 +205,28 @@ class Service(Config):
         )
         if res.status_code != 200:
             raise CommentError('failed.')
+
+    def join_community(self, community_id):
+        url = self.HOST_DOMAIN + self.LEGACY_VERSION + \
+            self.COMMUNITY_JOIN_PATH.format(community_id=community_id)
+
+        res = self.session.post(
+            url=url,
+            headers=self.HEADERS
+        )
+        if res.status_code != 200:
+            raise CommunityJoinError('failed.')
+
+    def leave_community(self, community_id):
+        url = self.HOST_DOMAIN + self.LEGACY_VERSION + \
+            self.COMMUNITY_JOIN_PATH.format(community_id=community_id)
+
+        res = self.session.delete(
+            url=url,
+            headers=self.HEADERS
+        )
+        if res.status_code != 200:
+            raise CommunityLeaveError('failed.')
 
     def logout(self):
         url = self.HOST_DOMAIN + self.LEGACY_VERSION + self.LOGOUT_PATH

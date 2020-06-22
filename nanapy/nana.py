@@ -1,4 +1,4 @@
-from .object import User, Post
+from .object import User, Post, Community
 from .service import Service
 from .callback import log
 
@@ -22,7 +22,7 @@ class Nana:
             self._service = Service(email, password)
             login_type = 'Email'
         else:
-            self._service = Service()
+            self._service = Service(email, password)
             login_type = 'Create'
             self.log(f'email: {self.email}, password: {self.password}')
         self.profile = User(self._service.get_my_info())
@@ -46,32 +46,44 @@ class Nana:
         return Post(self._service.get_post(post_id))
 
     @check
-    def follow(self, user_id):
+    def get_community(self, community_id):
+        return Community(self._service.get_community(community_id))
+
+    @check
+    def follow_user(self, user_id):
         self._service.follow_user(user_id)
 
     @check
-    def unfollow(self, user_id):
+    def unfollow_user(self, user_id):
         self._service.unfollow_user(user_id)
 
     @check
-    def play(self, post_id, is_hex=True):
+    def play_post(self, post_id, is_hex=True):
         post_id = int(post_id, 16) if is_hex else post_id
         self._service.post_play(post_id)
 
     @check
-    def applause(self, post_id, is_hex=True):
+    def applause_post(self, post_id, is_hex=True):
         post_id = int(post_id, 16) if is_hex else post_id
         self._service.post_applause(post_id)
 
     @check
-    def unapplause(self, post_id, is_hex=True):
+    def unapplause_post(self, post_id, is_hex=True):
         post_id = int(post_id, 16) if is_hex else post_id
         self._service.post_unapplause(post_id)
 
     @check
-    def comment(self, post_id, comment, is_hex=True):
+    def comment_post(self, post_id, comment, is_hex=True):
         post_id = int(post_id, 16) if is_hex else post_id
         self._service.post_comment(post_id, comment)
+
+    @check
+    def join_community(self, community_id):
+        self._service.join_community(community_id)
+
+    @check
+    def leave_community(self, community_id):
+        self._service.leave_community(community_id)
 
     @check
     def logout(self):

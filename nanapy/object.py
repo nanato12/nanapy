@@ -83,9 +83,58 @@ class Post:
 
     def __init__(self, post_data):
         self.__dict__.update(post_data)
+        self.user = User(self.user)
+        self.comments = [Comment(comment) for comment in self.comments]
 
     def __str__(self):
         return 'Post({})'.format(
+            ', '.join(
+                [f'{key}={value}' for key, value in self.__dict__.items()]
+            )
+        )
+
+class Comment:
+
+    comment_id = None
+    created_at = None
+    body = None
+    user = None
+    reply_to = None
+
+    def __init__(self, comment_data):
+        self.__dict__.update(comment_data)
+        self.user = User(self.user)
+
+    def __str__(self):
+        return 'Comment({})'.format(
+            ', '.join(
+                [f'{key}={value}' for key, value in self.__dict__.items()]
+            )
+        )
+
+class Community:
+
+    community_id = None
+    name = None
+    description = None
+    pic_url = None
+    pic_url_large = None
+    user = None
+    thread = None
+    created_at = None
+    is_member = None
+    is_admin = None
+    members_count = None
+    category = None
+    url = None
+    language = None
+
+    def __init__(self, community_data):
+        self.__dict__.update(community_data)
+        self.user = User(self.user)
+
+    def __str__(self):
+        return 'Community({})'.format(
             ', '.join(
                 [f'{key}={value}' for key, value in self.__dict__.items()]
             )
