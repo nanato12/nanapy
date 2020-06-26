@@ -62,3 +62,8 @@ class LogoutError(Exception):
     """
         logout error
     """
+
+class NanapyError(Exception):
+    """
+        nanapy error
+    """
