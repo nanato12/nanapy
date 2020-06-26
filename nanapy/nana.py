@@ -14,17 +14,23 @@ class Nana:
 
     is_login = False
 
-    def __init__(self, email=None, password=None, token=None):
-        if token:
-            self._service = Service(token=token)
-            login_type = 'Token'
-        elif email and password:
-            self._service = Service(email, password)
-            login_type = 'Email'
-        else:
-            self._service = Service(email, password)
+    def __init__(self, email=None, password=None, name=None,
+            token=None, create=False, proxy=None):
+        self._service = Service(
+            email=email,
+            password=password,
+            name=name,
+            token=token,
+            create=create,
+            proxy=proxy
+        )
+        if create:
             login_type = 'Create'
             self.log(f'email: {self.email}, password: {self.password}')
+        elif token:
+            login_type = 'Token'
+        else:
+            login_type = 'Email'
         self.profile = User(self._service.get_my_info())
         self.is_login = True
         self.log(
@@ -59,22 +65,26 @@ class Nana:
 
     @check
     def play_post(self, post_id, is_hex=True):
-        post_id = int(post_id, 16) if is_hex else post_id
+        if is_hex:
+            post_id = int(post_id, 16)
         self._service.post_play(post_id)
 
     @check
     def applause_post(self, post_id, is_hex=True):
-        post_id = int(post_id, 16) if is_hex else post_id
+        if is_hex:
+            post_id = int(post_id, 16)
         self._service.post_applause(post_id)
 
     @check
     def unapplause_post(self, post_id, is_hex=True):
-        post_id = int(post_id, 16) if is_hex else post_id
+        if is_hex:
+            post_id = int(post_id, 16)
         self._service.post_unapplause(post_id)
 
     @check
     def comment_post(self, post_id, comment, is_hex=True):
-        post_id = int(post_id, 16) if is_hex else post_id
+        if is_hex:
+            post_id = int(post_id, 16)
         self._service.post_comment(post_id, comment)
 
     @check
